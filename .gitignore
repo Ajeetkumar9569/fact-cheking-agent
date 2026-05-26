@@ -1,0 +1,40 @@
+# Virtual Environment
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Variables
+.env
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# Temporary Files
+temp/
+
+# VS Code
+.vscode/
+
+# Mac/Linux System Files
+.DS_Store
+
+# Logs
+*.log
+
+# PDF Files
+*.pdf
+
+# Build Files
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Misc
+*.sqlite3

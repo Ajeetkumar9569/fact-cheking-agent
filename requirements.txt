@@ -1,0 +1,8 @@
+# requirements.txt
+
+streamlit
+pdfplumber
+duckduckgo-search
+requests
+groq
+python-dotenv
