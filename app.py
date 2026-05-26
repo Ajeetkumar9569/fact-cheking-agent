@@ -259,21 +259,20 @@ if uploaded_file:
             st.markdown(f"""
             <div class="{css_class}">
 
-                <div class="claim-title">
-                    📌 {row['Claim']}
-                </div>
+            <div class="claim-title">
+            📌 {row['Claim']}
+            </div>
+            <div class="status-text">
+            <b>Status:</b>
+            <span style="font-weight:700;">
+            {status}
+            </span>
+            </div>
 
-                <div class="status-text">
-                    <b>Status:</b>
-                    <span style="font-weight:700;">
-                        {status}
-                    </span>
-                </div>
-
-                <div class="correct-info">
-                    <b>Correct Information:</b><br>
-                    {row['Correct Info']}
-                </div>
+            <div class="correct-info">
+            <b>Correct Information:</b><br>
+            {row['Correct Info']}
+            </div>
 
             </div>
             """, unsafe_allow_html=True)
