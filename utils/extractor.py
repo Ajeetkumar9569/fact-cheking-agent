@@ -1,16 +1,7 @@
 # utils/extractor.py
 
-import os
+import re
 import pdfplumber
-from groq import Groq
-from dotenv import load_dotenv
-from utils.prompts import CLAIM_EXTRACTION_PROMPT
-
-load_dotenv()
-
-client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
 
 
 def extract_text_from_pdf(pdf_path):
@@ -31,57 +22,29 @@ def extract_text_from_pdf(pdf_path):
 
 def extract_claims(text):
 
-    prompt = f"""
-    {CLAIM_EXTRACTION_PROMPT}
-
-    TEXT:
-    {text}
-    """
-
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-
-    result = response.choices[0].message.content
-
-    claims = result.split("\n")
+    # Split into sentences
+    sentences = re.split(r'(?<=[.!?])\s+', text)
 
     clean_claims = []
 
-    for claim in claims:
+    for sentence in sentences:
 
-        claim = claim.replace("-", "").replace("*", "").strip()
+        sentence = sentence.strip()
 
-        # Skip unwanted intro text
-        if "Here are" in claim:
+        # Remove bullets
+        sentence = sentence.replace("•", "")
+        sentence = sentence.replace("-", "")
+        sentence = sentence.replace("*", "")
+
+        # Remove extra spaces
+        sentence = sentence.strip()
+
+        # Skip empty or tiny lines
+        if len(sentence) < 5:
             continue
 
-        if "factual claims" in claim:
-            continue
-
-        # Remove anything inside brackets
-        if "(" in claim:
-            claim = claim.split("(")[0].strip()
-
-        # Remove extra explanation after colon
-        if ":" in claim:
-
-            parts = claim.split(":")
-
-            # Keep only first 2 parts max
-            if len(parts) > 2:
-                claim = parts[0] + ": " + parts[1]
-
-        # Final cleanup
-        claim = claim.strip()
-
-        if len(claim) > 10:
-            clean_claims.append(claim)
+        # Avoid duplicates
+        if sentence not in clean_claims:
+            clean_claims.append(sentence)
 
     return clean_claims
