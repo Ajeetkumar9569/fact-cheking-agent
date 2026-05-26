@@ -1,4 +1,5 @@
 # app.py
+
 import os
 import streamlit as st
 from utils.extractor import extract_text_from_pdf, extract_claims
@@ -153,6 +154,7 @@ if uploaded_file:
 
     with open(temp_path, "wb") as f:
         f.write(uploaded_file.read())
+
     st.success("✅ PDF Uploaded Successfully!")
 
     # ---------- TEXT EXTRACTION ----------
@@ -173,11 +175,11 @@ if uploaded_file:
 
         for claim in claims:
 
-            st.markdown(f'''
+            st.markdown(f"""
             <div class="claim-box">
-            {claim}
+                {claim}
             </div>
-            ''', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
         st.divider()
 
@@ -191,9 +193,13 @@ if uploaded_file:
         inaccurate_count = 0
         false_count = 0
 
+        # ---------- VERIFY CLAIMS ----------
+
         for i, claim in enumerate(claims):
 
             status, info = verify_claim(claim)
+
+            status = status.strip().upper()
 
             results.append({
                 "Claim": claim,
@@ -201,13 +207,15 @@ if uploaded_file:
                 "Correct Info": info
             })
 
-            if "VERIFIED" in status:
+            # ---------- COUNTING ----------
+
+            if status == "VERIFIED":
                 verified_count += 1
 
-            elif "FALSE" in status:
+            elif status == "FALSE":
                 false_count += 1
 
-            else:
+            elif status == "INACCURATE":
                 inaccurate_count += 1
 
             progress.progress((i + 1) / len(claims))
@@ -235,30 +243,40 @@ if uploaded_file:
 
             css_class = "claim-box"
 
-            if "VERIFIED" in status:
+            # ---------- STATUS COLORS ----------
+
+            if status == "VERIFIED":
                 css_class += " verified"
 
-            elif "FALSE" in status:
+            elif status == "FALSE":
                 css_class += " false"
 
-            else:
+            elif status == "INACCURATE":
                 css_class += " inaccurate"
 
-            st.markdown(f'''
+            # ---------- RESULT CARD ----------
+
+            st.markdown(f"""
             <div class="{css_class}">
 
-            <div class="claim-title">
-            📌 {row['Claim']}
+                <div class="claim-title">
+                    📌 {row['Claim']}
+                </div>
+
+                <div class="status-text">
+                    <b>Status:</b>
+                    <span style="font-weight:700;">
+                        {status}
+                    </span>
+                </div>
+
+                <div class="correct-info">
+                    <b>Correct Information:</b><br>
+                    {row['Correct Info']}
+                </div>
+
             </div>
-            <div class="status-text">
-            <b>Status:</b> <span style="font-weight:700;">{row['Status']}</span>
-            </div>
-            <div class="correct-info">
-            <b>Correct Information:</b><br>
-            {row['Correct Info']}
-            </div>
-            </div>
-            ''', unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
     else:
         st.warning("⚠️ No claims found in the document.")
@@ -271,5 +289,6 @@ st.markdown("""
 🚀 <strong>AI Fact-Check Agent</strong><br>
 Powered by Groq LLM + Live Web Verification + Streamlit<br><br>
 Developed by <strong>Ajeet Kumar</strong>
+
 </div>
 """, unsafe_allow_html=True)

@@ -84,4 +84,4 @@ def extract_claims(text):
         if len(claim) > 10:
             clean_claims.append(claim)
 
-    return clean_claims[:10]
+    return clean_claims
