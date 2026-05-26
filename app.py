@@ -1,5 +1,5 @@
 # app.py
-
+import os
 import streamlit as st
 from utils.extractor import extract_text_from_pdf, extract_claims
 from utils.verifier import verify_claim
@@ -147,11 +147,12 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file:
 
+    os.makedirs("temp", exist_ok=True)
+
     temp_path = f"temp/{uploaded_file.name}"
 
     with open(temp_path, "wb") as f:
         f.write(uploaded_file.read())
-
     st.success("✅ PDF Uploaded Successfully!")
 
     # ---------- TEXT EXTRACTION ----------
